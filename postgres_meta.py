@@ -2,10 +2,60 @@
 # or a restore from backup and get a reasonable compare. You can throw the outputs into a git diff or a traditional diff and make sense of what has 
 # changed or is different.
 
+#/usr/bin/python3
+#
+#
+import sys
 import psycopg2
 
+# Try to parse
+
+# print(len(sys.argv))
+
+if len(sys.argv[1:]) == 0:
+    print("Trying defaults. (No connection attributes specified.)")
+    try:
+        conn=psycopg2.connect("dbname='demo' user='postgres' password=''")
+    except:
+        print("I am unable to connect to the database.")
+        exit(-1)
+
+elif len(sys.argv[1:]) == 1:
+    print("Only one argument - assuming full connection string.")
+    try:
+        conn=psycopg2.connect(sys.argv[1])
+    except:
+        print("I am unable to connect to the database.")
+        exit(-2)
+
+else:
+    print("Many args - attempting parse.")
+    conn_string = ""
+    while True:
+        temp = sys.argv.pop()
+        temp2 = temp.split("=")
+        if temp2[0] in ('database','dbname','user','password','host','port'):
+            conn_string = conn_string + temp + " "
+        if len(sys.argv)==0:
+            break;
+    print(conn_string)
+    try:
+        conn=psycopg2.connect(conn_string)
+    except:
+        print("I am unable to connect to the database.")
+        exit(-2)    
+
+# dbname – the database name (database is a deprecated alias)
+# user – user name used to authenticate
+# password – password used to authenticate
+# host – database host address (defaults to UNIX socket if not provided)
+# port – connection port number (defaults to 5432 if not provided)
+
+
+# Try to connect
+
 try:
-    conn=psycopg2.connect("dbname='' user='' password=''")
+    conn=psycopg2.connect("dbname='demo' user='postgres' password=''")
 except:
     print("I am unable to connect to the database.")
     
@@ -17,7 +67,7 @@ except:
     exit()
 
 rs = cur.fetchall()
-print(rs)
+#print(rs)
 for val in rs:
     print(val[1]) 
     try:
@@ -103,6 +153,8 @@ for val in rs:
             except:
                 print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.min" + "=N/A")
                 conn.rollback()
+
+
 
     except:
         print("Can't get field list for a table or other query failed after. ("+ val[1]  +")")
