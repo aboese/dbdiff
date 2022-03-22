@@ -43,7 +43,7 @@ else:
         conn=psycopg2.connect(conn_string)
     except:
         print("I am unable to connect to the database.")
-        exit(-2)    
+        exit(-3)    
 
 # dbname – the database name (database is a deprecated alias)
 # user – user name used to authenticate
@@ -117,9 +117,17 @@ for val in rs:
             avg_id = ("N/A",)
             conn.rollback()
 
+        try:
+            cur.execute("select cast(stddev("+ str(index_name[0])  +")::numeric(10,2) as varchar)  from " + str(val[1]) )
+            stddev_id = cur.fetchone()
+        except:
+            stddev_id = ("N/A",)
+            conn.rollback()
+
         print(val[0] + "." + str(val[1]) + ".min_id" + "=" + str(min_id[0]))
         print(val[0] + "." + str(val[1]) + ".max_id" + "=" + str(max_id[0]))
         print(val[0] + "." + str(val[1]) + ".avg_id" + "=" + str(avg_id[0]))
+        print(val[0] + "." + str(val[1]) + ".stddev_id" + "=" + str(stddev_id[0]))
 
         for col in colnames:
             try:
@@ -144,6 +152,14 @@ for val in rs:
                 print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.avg" + "=" + str(length_avg[0]))
             except:
                 print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.avg" + "=N/A")
+                conn.rollback()
+
+            try:
+                cur.execute("select stddev(length(cast("+ col +" as varchar))) from "+ str(val[1]) )
+                length_stddev = cur.fetchone()
+                print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.stddev" + "=" + str(length_stddev[0]))
+            except:
+                print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.stddev" + "=N/A")
                 conn.rollback()
 
             try:
