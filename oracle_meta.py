@@ -9,44 +9,51 @@
 #
 #
 import sys
-import psycopg2
+import cx_Oracle
 
 # Try to parse
 
 # print(len(sys.argv))
 
+c = conn.cursor()
+
+
+
 if len(sys.argv[1:]) == 0:
     print("Trying defaults. (No connection attributes specified.)")
     try:
-        conn=psycopg2.connect("dbname='demo' user='postgres' password=''")
+        dsn_tns = cx_Oracle.makedsn('Host Name', 'Port Number', service_name='Service Name') # if needed, place an 'r' before any parameter in order to address special characters such as '\'.
+        conn = cx_Oracle.connect(user=r'demo', password='', dsn=dsn_tns) # if needed, place an 'r' before any parameter in order to address special characters such as '\'. For example, if your user name contains '\', you'll need to place 'r' before the user name: user=r'User Name'
     except:
         print("I am unable to connect to the database.")
         exit(-1)
 
 elif len(sys.argv[1:]) == 1:
     print("Only one argument - assuming full connection string.")
-    try:
-        conn=psycopg2.connect(sys.argv[1])
-    except:
-        print("I am unable to connect to the database.")
-        exit(-2)
+    #try:
+    #    conn=psycopg2.connect(sys.argv[1])
+    #    dsn_tns = cx_Oracle.makedsn('Host Name', 'Port Number', service_name='Service Name') # if needed, place an 'r' before any parameter in order to address special characters such as '\'.
+    #    conn = cx_Oracle.connect(user=r'demo', password='', dsn=dsn_tns) # if needed, place an 'r' before any parameter in order to address special characters such as '\'. For example, if your user name contains '\', you'll need to place 'r' before the user name: user=r'User Name'        
+    #except:
+    print("I am unable to connect to the database.")
+    exit(-2)
 
 else:
     print("Many args - attempting parse.")
-    conn_string = ""
-    while True:
-        temp = sys.argv.pop()
-        temp2 = temp.split("=")
-        if temp2[0] in ('database','dbname','user','password','host','port'):
-            conn_string = conn_string + temp + " "
-        if len(sys.argv)==0:
-            break;
-    print(conn_string)
-    try:
-        conn=psycopg2.connect(conn_string)
-    except:
-        print("I am unable to connect to the database.")
-        exit(-3)    
+    #conn_string = ""
+    #while True:
+    #    temp = sys.argv.pop()
+    #    temp2 = temp.split("=")
+    #    if temp2[0] in ('database','dbname','user','password','host','port'):
+    #        conn_string = conn_string + temp + " "
+    #    if len(sys.argv)==0:
+    #        break;
+    #print(conn_string)
+    #try:
+    #    conn=psycopg2.connect(conn_string)
+    #except:
+    print("I am unable to connect to the database.")
+    exit(-3)    
 
 # dbname – the database name (database is a deprecated alias)
 # user – user name used to authenticate
