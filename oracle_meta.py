@@ -15,9 +15,6 @@ import cx_Oracle
 
 # print(len(sys.argv))
 
-c = conn.cursor()
-
-
 
 if len(sys.argv[1:]) == 0:
     print("Trying defaults. (No connection attributes specified.)")
@@ -53,7 +50,7 @@ else:
     #    conn=psycopg2.connect(conn_string)
     #except:
     print("I am unable to connect to the database.")
-    exit(-3)    
+    exit(-3)
 
 # dbname – the database name (database is a deprecated alias)
 # user – user name used to authenticate
@@ -179,8 +176,6 @@ for val in rs:
             except:
                 print(val[0] + "." + str(val[1]) + "."+ str(col)  +".length.min" + "=N/A")
                 conn.rollback()
-
-
 
     except:
         print("Can't get field list for a table or other query failed after. ("+ val[1]  +")")
